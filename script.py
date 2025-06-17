@@ -10,30 +10,67 @@ import time
 from urllib.parse import urlparse, urljoin
 import platform
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
+import calendar
 
 class GoogleSearchAPI:
     def __init__(self, api_key: str, search_engine_id: str):
         self.api_key = api_key
         self.search_engine_id = search_engine_id
         self.base_url = "https://www.googleapis.com/customsearch/v1"
+        self.max_results_per_page = 10  # Google's maximum per request
+        self.max_total_results = 100    # Google's maximum total results per query
 
-    def search_domain(self, domain: str, num_results: int = 10) -> List[Dict]:
+    def _get_date_ranges(self, weeks_back: int = 52) -> List[tuple]:
         """
-        Search for URLs within a specific domain using Google Custom Search API
+        Generate date ranges for searching, going back specified number of weeks
         
         Args:
-            domain (str): The domain to search for (e.g., 'lovable.app')
-            num_results (int): Number of results to return (max 10 per request)
+            weeks_back (int): Number of weeks to go back
             
         Returns:
-            List[Dict]: List of search results containing URLs and metadata
+            List[tuple]: List of (start_date, end_date) tuples in YYYY/MM/DD format
         """
+        date_ranges = []
+        end_date = datetime.now()
+        
+        for _ in range(weeks_back):
+            # Get the start of the current week (Monday)
+            start_date = end_date - timedelta(days=end_date.weekday())
+            # Get the end of the current week (Sunday)
+            end_date = start_date + timedelta(days=6)
+            
+            # Format dates for Google's API
+            start_str = start_date.strftime('%Y/%m/%d')
+            end_str = end_date.strftime('%Y/%m/%d')
+            
+            date_ranges.append((start_str, end_str))
+            
+            # Move to the previous week
+            end_date = start_date - timedelta(days=1)
+        
+        return date_ranges
+
+    def _search_with_date_range(self, domain: str, start_date: str, end_date: str, start_index: int = 1) -> List[Dict]:
+        """
+        Perform a search with a specific date range
+        
+        Args:
+            domain (str): The domain to search for
+            start_date (str): Start date in YYYY/MM/DD format
+            end_date (str): End date in YYYY/MM/DD format
+            start_index (int): The starting index for results
+            
+        Returns:
+            List[Dict]: List of search results
+        """
+        query = f'site:{domain} after:{start_date} before:{end_date}'
         params = {
             'key': self.api_key,
             'cx': self.search_engine_id,
-            'q': f'site:{domain}',
-            'num': min(num_results, 10)  # Google API limits to 10 results per request
+            'q': query,
+            'num': self.max_results_per_page,
+            'start': start_index
         }
 
         try:
@@ -41,19 +78,70 @@ class GoogleSearchAPI:
             response.raise_for_status()
             data = response.json()
             
-            results = []
-            if 'items' in data:
-                for item in data['items']:
-                    results.append({
-                        'url': item['link'],
-                        'title': item['title'],
-                        'snippet': item.get('snippet', '')
-                    })
+            if 'items' not in data:
+                return []
             
-            return results
+            return [{
+                'url': item['link'],
+                'title': item['title'],
+                'snippet': item.get('snippet', ''),
+                'date_range': f"{start_date} to {end_date}"
+            } for item in data['items']]
+            
         except requests.exceptions.RequestException as e:
-            print(f"Error making request: {e}")
+            print(f"Error making request for date range {start_date} to {end_date}: {e}")
             return []
+
+    def search_domain(self, domain: str, weeks_back: int = 52) -> List[Dict]:
+        """
+        Search for URLs within a specific domain using weekly date ranges
+        
+        Args:
+            domain (str): The domain to search for (e.g., 'lovable.app')
+            weeks_back (int): Number of weeks to search back
+            
+        Returns:
+            List[Dict]: List of search results containing URLs and metadata
+        """
+        all_results = []
+        seen_urls = set()  # Keep track of unique URLs
+        
+        # Get date ranges
+        date_ranges = self._get_date_ranges(weeks_back)
+        
+        print(f"Starting search with {len(date_ranges)} weekly date ranges...")
+        
+        # Try each date range
+        for start_date, end_date in date_ranges:
+            print(f"\nSearching week: {start_date} to {end_date}")
+            start_index = 1
+            
+            # Get up to 100 results for this date range
+            while start_index <= 100:
+                results = self._search_with_date_range(domain, start_date, end_date, start_index)
+                
+                if not results:
+                    break
+                
+                # Add only new, unique URLs
+                new_results = 0
+                for result in results:
+                    if result['url'] not in seen_urls:
+                        seen_urls.add(result['url'])
+                        all_results.append(result)
+                        new_results += 1
+                
+                print(f"Found {len(results)} results, {new_results} new unique URLs")
+                
+                # Check if we got fewer results than expected
+                if len(results) < self.max_results_per_page:
+                    break
+                
+                start_index += self.max_results_per_page
+                time.sleep(1)  # Respect API rate limits
+        
+        print(f"\nFound {len(all_results)} unique results for domain: {domain}")
+        return all_results
 
 class WebCrawler:
     def __init__(self):
