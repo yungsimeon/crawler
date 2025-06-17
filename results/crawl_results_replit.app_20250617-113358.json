@@ -1,0 +1,100 @@
+[
+  {
+    "url": "https://fashionsquad.replit.app/",
+    "title": "Fashion Squad | AI-Powered Style Feedback",
+    "crawl_result": {
+      "url": "https://fashionsquad.replit.app/",
+      "emails": [
+        "support@fashionsquad.in"
+      ],
+      "contact_page": null
+    }
+  },
+  {
+    "url": "https://lynek.replit.app/",
+    "title": "LYNEK | AI-Powered Solana Platform",
+    "crawl_result": {
+      "url": "https://lynek.replit.app/",
+      "emails": [],
+      "contact_page": null
+    }
+  },
+  {
+    "url": "https://livestrong.replit.app/",
+    "title": "Livestrong Nutrition | Men's Health & Nutrition Coaching",
+    "crawl_result": {
+      "url": "https://livestrong.replit.app/",
+      "emails": [
+        "info@livestrongnutrition.co.uk"
+      ],
+      "contact_page": null
+    }
+  },
+  {
+    "url": "https://primefy.replit.app/",
+    "title": "Planes Personalizados de Entrenamiento, Nutrici\u00f3n y ...",
+    "crawl_result": {
+      "url": "https://primefy.replit.app/",
+      "emails": [],
+      "contact_page": null
+    }
+  },
+  {
+    "url": "https://metrepersecond.replit.app/",
+    "title": "Premium Car Service in Hyderabad | Best Repair Center",
+    "crawl_result": {
+      "url": "https://metrepersecond.replit.app/",
+      "emails": [
+        "support@metrepersecond.com"
+      ],
+      "contact_page": null
+    }
+  },
+  {
+    "url": "https://peppinowallcoverings.replit.app/",
+    "title": "Peppino Wall Coverings | India's Premier Engineered Wall Solution",
+    "crawl_result": {
+      "url": "https://peppinowallcoverings.replit.app/",
+      "emails": [
+        "jitpolycoat@gmail.com"
+      ],
+      "contact_page": null
+    }
+  },
+  {
+    "url": "https://play4power.replit.app/",
+    "title": "PLAY4POWER - Empowering Youth Through Sports",
+    "crawl_result": {
+      "url": "https://play4power.replit.app/",
+      "emails": [],
+      "contact_page": null
+    }
+  },
+  {
+    "url": "https://goodnightofsleep.replit.app/",
+    "title": "Good Night of Sleep - Evidence-Based Sleep Health Solutions",
+    "crawl_result": {
+      "url": "https://goodnightofsleep.replit.app/",
+      "emails": [],
+      "contact_page": "https://goodnightofsleep.replit.app/about"
+    }
+  },
+  {
+    "url": "https://closecoffee.replit.app/",
+    "title": "Close Coffee - Discover Coffee Shops Near You",
+    "crawl_result": {
+      "url": "https://closecoffee.replit.app/",
+      "emails": [],
+      "contact_page": null
+    }
+  },
+  {
+    "url": "https://1210waterstreet.replit.app/",
+    "title": "Historic 1889 Farmhouse & Charming ADU | Port Angeles, WA",
+    "crawl_result": {
+      "url": "https://1210waterstreet.replit.app/",
+      "error": "Timeout 30000ms exceeded.",
+      "emails": []
+    }
+  }
+]
