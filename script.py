@@ -446,12 +446,7 @@ def main():
         # Add a small delay between requests to be polite
         time.sleep(2)
     
-    # Save results to JSON file (keeping this as backup)
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    output_file = f'results/crawl_results_{domain}_{timestamp}.json'
-    with open(output_file, 'w') as f:
-        json.dump(all_results, f, indent=2)
-    print(f"\nResults saved to {output_file}")
+
 
 if __name__ == "__main__":
     main()
