@@ -306,7 +306,11 @@ class WebCrawler:
                 }
                 
             except Exception as e:
-                return {'url': url, 'error': str(e), 'emails': []}
+                error_msg = str(e)
+                if "timeout" in error_msg.lower():
+                    return {'url': url, 'error': f'Timeout after 30 seconds: {error_msg}', 'emails': []}
+                else:
+                    return {'url': url, 'error': error_msg, 'emails': []}
             finally:
                 try:
                     context.close()
