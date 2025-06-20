@@ -21,12 +21,12 @@ class GoogleSearchAPI:
         self.max_results_per_page = 10  # Google's maximum per request
         self.max_total_results = 100    # Google's maximum total results per query
 
-    def _get_date_ranges(self, weeks_back: int = 52) -> List[tuple]:
+    def _get_date_ranges(self, days_back: int = 365) -> List[tuple]:
         """
-        Generate date ranges for searching, going back specified number of weeks
+        Generate date ranges for searching, going back specified number of days
         
         Args:
-            weeks_back (int): Number of weeks to go back
+            days_back (int): Number of days to go back
             
         Returns:
             List[tuple]: List of (start_date, end_date) tuples in YYYY/MM/DD format
@@ -34,11 +34,10 @@ class GoogleSearchAPI:
         date_ranges = []
         end_date = datetime.now()
         
-        for _ in range(weeks_back):
-            # Get the start of the current week (Monday)
-            start_date = end_date - timedelta(days=end_date.weekday())
-            # Get the end of the current week (Sunday)
-            end_date = start_date + timedelta(days=6)
+        for _ in range(days_back):
+            # Each range is a single day
+            start_date = end_date
+            end_date = start_date
             
             # Format dates for Google's API
             start_str = start_date.strftime('%Y/%m/%d')
@@ -46,7 +45,7 @@ class GoogleSearchAPI:
             
             date_ranges.append((start_str, end_str))
             
-            # Move to the previous week
+            # Move to the previous day
             end_date = start_date - timedelta(days=1)
         
         return date_ranges
@@ -92,13 +91,13 @@ class GoogleSearchAPI:
             print(f"Error making request for date range {start_date} to {end_date}: {e}")
             return []
 
-    def search_domain(self, domain: str, weeks_back: int = 52) -> List[Dict]:
+    def search_domain(self, domain: str, days_back: int = 365) -> List[Dict]:
         """
-        Search for URLs within a specific domain using weekly date ranges
+        Search for URLs within a specific domain using daily date ranges
         
         Args:
             domain (str): The domain to search for (e.g., 'lovable.app')
-            weeks_back (int): Number of weeks to search back
+            days_back (int): Number of days to search back
             
         Returns:
             List[Dict]: List of search results containing URLs and metadata
@@ -107,13 +106,13 @@ class GoogleSearchAPI:
         seen_urls = set()  # Keep track of unique URLs
         
         # Get date ranges
-        date_ranges = self._get_date_ranges(weeks_back)
+        date_ranges = self._get_date_ranges(days_back)
         
-        print(f"Starting search with {len(date_ranges)} weekly date ranges...")
+        print(f"Starting search with {len(date_ranges)} daily date ranges...")
         
         # Try each date range
         for start_date, end_date in date_ranges:
-            print(f"\nSearching week: {start_date} to {end_date}")
+            print(f"\nSearching day: {start_date} to {end_date}")
             start_index = 1
             
             # Get up to 100 results for this date range
